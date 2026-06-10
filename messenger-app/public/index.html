@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>پیام‌رسان حار</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>در حال بارگذاری...</p>
+        </div>
+    </div>
+    <div id="requestsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📬 درخواست‌های دوستی</h3>
+                <button class="modal-close" onclick="closeModal('requestsModal')">✕</button>
+            </div>
+            <div id="requestsList" class="modal-list">
+                <div class="empty">📭 درخواستی ندارید</div>
+            </div>
+        </div>
+    </div>
+    <div id="sendRequestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>➕ ارسال درخواست دوستی</h3>
+                <button class="modal-close" onclick="closeModal('sendRequestModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="requestCode" placeholder="کد 6 رقمی" maxlength="6" class="code-input">
+                <div id="searchPreview" class="search-preview" style="display: none;">
+                    <div class="user-card">
+                        <div class="user-avatar">👤</div>
+                        <div class="user-info">
+                            <div class="user-name" id="previewName"></div>
+                            <div class="user-code" id="previewCode"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary" id="sendRequestBtn" onclick="submitFriendRequest()" disabled>ارسال درخواست</button>
+            </div>
+        </div>
+    </div>
+    <div id="responseModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>💬 درخواست دوستی</h3>
+                <button class="modal-close" onclick="closeModal('responseModal')">✕</button>
+            </div>
+            <div class="modal-body" id="responseBody"></div>
+            <div class="modal-footer">
+                <button class="btn-danger" onclick="respondToCurrentRequest(false)">رد کردن</button>
+                <button class="btn-primary" onclick="respondToCurrentRequest(true)">تأیید کردن</button>
+            </div>
+        </div>
+    </div>
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👤 پروفایل کاربر</h3>
+                <button class="modal-close" onclick="closeModal('profileModal')">✕</button>
+            </div>
+            <div class="modal-body" id="profileBody"></div>
+        </div>
+    </div>
+    <div id="myProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👤 پروفایل من</h3>
+                <button class="modal-close" onclick="closeModal('myProfileModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-avatar" id="myAvatar" style="text-align:center;margin-bottom:20px">
+                    <div class="avatar-large" id="myAvatarText">👤</div>
+                </div>
+                <div class="profile-field">
+                    <label>نام کامل</label>
+                    <input type="text" id="profileName" class="profile-input">
+                </div>
+                <div class="profile-field">
+                    <label>بیوگرافی</label>
+                    <textarea id="profileBio" class="profile-textarea" rows="3" placeholder="درباره خودت بنویس..."></textarea>
+                </div>
+                <div class="profile-field">
+                    <label>کد دعوت</label>
+                    <div class="profile-code" id="profileCode"></div>
+                </div>
+                <button class="btn-primary" onclick="updateProfile()">ذخیره تغییرات</button>
+            </div>
+        </div>
+    </div>
+    <div id="createGroupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👥 ساخت گروه جدید</h3>
+                <button class="modal-close" onclick="closeModal('createGroupModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="groupName" placeholder="نام گروه" class="profile-input">
+                <textarea id="groupBio" placeholder="توضیحات گروه" class="profile-textarea" rows="3"></textarea>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="groupPrivate"> 
+                </label>
+                <button class="btn-primary" onclick="createGroup()">ایجاد گروه</button>
+            </div>
+        </div>
+    </div>
+    <div id="searchModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>🔍 جستجو</h3>
+                <button class="modal-close" onclick="closeModal('searchModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="searchInput" placeholder="جستجوی کاربر یا گروه..." class="search-input" oninput="performSearch()">
+                <div class="search-tabs">
+                    <button class="search-tab active" data-tab="users" onclick="switchSearchTab('users')">👤 کاربران</button>
+                    <button class="search-tab" data-tab="groups" onclick="switchSearchTab('groups')">👥 گروه‌ها</button>
+                </div>
+                <div id="searchResults" class="search-results">
+                    <div class="empty">🔍 جستجو را شروع کنید...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="replyModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>💬 پاسخ به پیام</h3>
+                <button class="modal-close" onclick="closeModal('replyModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="reply-preview" id="replyPreview"></div>
+                <textarea id="replyText" class="profile-textarea" rows="3" placeholder="پیام خود را بنویسید..."></textarea>
+                <button class="btn-primary" onclick="sendReply()">ارسال پاسخ</button>
+            </div>
+        </div>
+    </div>
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>🗑️ حذف پیام</h3>
+                <button class="modal-close" onclick="closeModal('deleteModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>آیا از حذف این پیام اطمینان دارید؟</p>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="deleteForBoth"> 🔥 حذف برای هر دو طرف
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-danger" onclick="confirmDeleteMessage()">حذف</button>
+                <button class="btn-secondary" onclick="closeModal('deleteModal')">انصراف</button>
+            </div>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
